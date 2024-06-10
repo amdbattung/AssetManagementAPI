@@ -10,10 +10,12 @@ namespace AssetManagementAPI.Repositories
     public class DepartmentRepository : IDepartmentRepository
     {
         private readonly DataContext _context;
+        private bool _disposed;
 
         public DepartmentRepository(DataContext context)
         {
             this._context = context;
+            this._disposed = false;
         }
 
         public async Task<(ICollection<Department> Data, int PageNumber, int PageSize, int ItemCount)> GetAllAsync(QueryObject? queryObject)
@@ -83,18 +85,16 @@ namespace AssetManagementAPI.Repositories
             return await _context.SaveChangesAsync() > 0 ? department : null;
         }
 
-        private bool disposed = false;
-
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!this._disposed)
             {
                 if (disposing)
                 {
                     _context.Dispose();
                 }
             }
-            this.disposed = true;
+            this._disposed = true;
         }
 
         public void Dispose()

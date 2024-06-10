@@ -8,7 +8,7 @@ namespace AssetManagementAPI.Services.Helpers
         public string? Query { get; set; }
         [FromQuery(Name = "page")]
         public int? PageNumber { get; set; }
-        [FromQuery(Name = "size")]
+        [FromQuery(Name = "page-size")]
         public int? PageSize { get; set; }
     }
 }

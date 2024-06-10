@@ -5,11 +5,13 @@ using AssetManagementAPI.Services.Helpers;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssetManagementAPI.Controllers
 {
     [ApiController]
+    /*[Authorize]*/
     [Route("api/departments")]
     public class DepartmentController : Controller
     {
@@ -32,7 +34,7 @@ namespace AssetManagementAPI.Controllers
         [HttpGet(Name = "IndexDepartments")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<GetManyDepartmentDTO>> IndexAsync([FromQuery] QueryObject? queryObject)
+        public async Task<ActionResult<GetManyDepartmentsDTO>> IndexAsync([FromQuery] QueryObject? queryObject)
         {
             if (queryObject != null)
             {
@@ -56,7 +58,7 @@ namespace AssetManagementAPI.Controllers
 
             /*return Ok(departments.Select(d => d.ToDto()));*/
 
-            return Ok(new GetManyDepartmentDTO(
+            return Ok(new GetManyDepartmentsDTO(
                 pageNumber: departments.PageNumber,
                 pageSize: departments.PageSize,
                 itemCount: departments.ItemCount,

@@ -5,11 +5,13 @@ using AssetManagementAPI.Services.Helpers;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssetManagementAPI.Controllers
 {
     [ApiController]
+    /*[Authorize]*/
     [Route("api/assets")]
     public class AssetController : Controller
     {
@@ -51,10 +53,33 @@ namespace AssetManagementAPI.Controllers
                     }
                 }
             }
-
+            
             var assets = await _assetRepository.GetAllAsync(queryObject);
+            GetManyAssetsDTO response = new(
+                pageNumber: assets.PageNumber,
+                pageSize: assets.PageSize,
+                itemCount: assets.ItemCount,
+                assets: assets.Data.Select(d => d.ToDto())
+            );
 
-            return Ok(assets.Select(a => a.ToDto()));
+            try
+            {
+                return Ok(response);
+            }
+            finally
+            {
+                foreach (Asset asset in assets.Data)
+                {
+                    asset.Dispose();
+                }
+            }
+
+            /*return Ok(new GetManyAssetsDTO(
+                pageNumber: assets.PageNumber,
+                pageSize: assets.PageSize,
+                itemCount: assets.ItemCount,
+                assets: assets.Data.Select(d => d.ToDto())
+            ));*/
         }
 
         [HttpPost(Name = "CreateAsset")]
@@ -62,20 +87,20 @@ namespace AssetManagementAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<GetAssetDTO>> CreateAsync([FromBody] CreateAssetDTO asset)
         {
-            ValidationResult validationResult = await _createAssetValidator.ValidateAsync(asset);
+                ValidationResult validationResult = await _createAssetValidator.ValidateAsync(asset);
 
-            if (!validationResult.IsValid)
-            {
-                validationResult.AddToModelState(this.ModelState);
-            }
+                if (!validationResult.IsValid)
+                {
+                    validationResult.AddToModelState(this.ModelState);
+                }
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            Asset? response = await _assetRepository.CreateAsync(asset);
-            return response == null ? NotFound() : CreatedAtAction(nameof(ShowAsync), new { id = response.Id }, response.ToDto());
+                using Asset? response = await _assetRepository.CreateAsync(asset);
+                return response == null ? NotFound() : CreatedAtAction(nameof(ShowAsync), new { id = response.Id }, response.ToDto());
         }
 
         [HttpGet("{id}", Name = "ShowAsset")]
@@ -89,8 +114,7 @@ namespace AssetManagementAPI.Controllers
                 return BadRequest("Null or invalid id");
             }
 
-            Asset? asset = await _assetRepository.GetByIdAsync(id);
-
+            using Asset? asset = await _assetRepository.GetByIdAsync(id);
             return asset == null ? NotFound() : Ok(asset.ToDto());
         }
 
@@ -100,25 +124,25 @@ namespace AssetManagementAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<GetAssetDTO>> UpdateAsync([FromRoute] string id, [FromBody] UpdateAssetDTO asset)
         {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return BadRequest("Null or invalid id");
-            }
+                if (string.IsNullOrWhiteSpace(id))
+                {
+                    return BadRequest("Null or invalid id");
+                }
 
-            ValidationResult validationResult = await _updateAssetValidator.ValidateAsync(asset);
+                ValidationResult validationResult = await _updateAssetValidator.ValidateAsync(asset);
 
-            if (!validationResult.IsValid)
-            {
-                validationResult.AddToModelState(this.ModelState);
-            }
+                if (!validationResult.IsValid)
+                {
+                    validationResult.AddToModelState(this.ModelState);
+                }
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            Asset? response = await _assetRepository.UpdateAsync(id, asset);
-            return response == null ? NotFound() : Ok(response.ToDto());
+                using Asset? response = await _assetRepository.UpdateAsync(id, asset);
+                return response == null ? NotFound() : Ok(response.ToDto());
         }
 
         [HttpDelete("{id}", Name = "DestroyAsset")]
@@ -137,7 +161,7 @@ namespace AssetManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            Asset? response = await _assetRepository.DeleteAsync(id);
+            using Asset? response = await _assetRepository.DeleteAsync(id);
             return response == null ? NotFound() : Ok(response.ToDto());
         }
     }

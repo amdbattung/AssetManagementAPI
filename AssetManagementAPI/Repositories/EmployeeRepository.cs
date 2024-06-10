@@ -10,29 +10,34 @@ namespace AssetManagementAPI.Repositories
     public class EmployeeRepository : IEmployeeRepository
     {
         private readonly DataContext _context;
+        private bool _disposed;
 
         public EmployeeRepository(DataContext context)
         {
             this._context = context;
+            this._disposed = false;
         }
 
-        public async Task<ICollection<Employee>> GetAllAsync(QueryObject? queryObject)
+        public async Task<(ICollection<Employee> Data, int PageNumber, int PageSize, int ItemCount)> GetAllAsync(QueryObject? queryObject)
         {
             var employee = _context.Employees.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(queryObject?.Query))
             {
-                employee = employee.Where(e => EF.Functions.ToTsVector("simple", e.LastName + " " + e.FirstName + " " + e.MiddleName).Matches(EF.Functions.PlainToTsQuery(queryObject.Query)));
+                employee = employee.Where(e => EF.Functions.ToTsVector("simple", e.LastName + " " + e.FirstName + " " + e.MiddleName).Matches(EF.Functions.ToTsQuery("simple", $"{queryObject.Query}:*")));
             }
 
             int pageNumber = queryObject?.PageNumber ?? 1;
             int pageSize = queryObject?.PageSize ?? 10;
 
-            return await employee
+            return (await employee
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .Include(e => e.Department)
-                .ToListAsync();
+                .ToListAsync(),
+                pageNumber,
+                pageSize,
+                await employee.CountAsync());
         }
 
         public async Task<Employee?> CreateAsync(CreateEmployeeDTO employee)
@@ -92,18 +97,16 @@ namespace AssetManagementAPI.Repositories
             return await _context.SaveChangesAsync() > 0 ? employee : null;
         }
 
-        private bool disposed = false;
-
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!this._disposed)
             {
                 if (disposing)
                 {
                     _context.Dispose();
                 }
             }
-            this.disposed = true;
+            this._disposed = true;
         }
 
         public void Dispose()

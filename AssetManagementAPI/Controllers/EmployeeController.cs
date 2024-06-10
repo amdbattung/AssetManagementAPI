@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AssetManagementAPI.Controllers
 {
     [ApiController]
+    /*[Authorize]*/
     [Route("api/employees")]
     public class EmployeeController : Controller
     {
@@ -55,7 +56,12 @@ namespace AssetManagementAPI.Controllers
 
             var employees = await _employeeRepository.GetAllAsync(queryObject);
 
-            return Ok(employees.Select(e => e.ToDto()));
+            return Ok(new GetManyEmployeesDTO(
+                pageNumber: employees.PageNumber,
+                pageSize: employees.PageSize,
+                itemCount: employees.ItemCount,
+                employees: employees.Data.Select(e => e.ToDto())
+            ));
         }
 
         [HttpPost(Name = "CreateEmployee")]
@@ -80,7 +86,6 @@ namespace AssetManagementAPI.Controllers
         }
 
         [HttpGet("{id}", Name = "ShowEmployee")]
-        [Authorize(Policy = "UserIsEmployeePolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

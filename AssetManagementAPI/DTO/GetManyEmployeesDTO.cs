@@ -2,20 +2,20 @@
 
 namespace AssetManagementAPI.DTO
 {
-    public class GetManyDepartmentDTO
+    public class GetManyEmployeesDTO
     {
         public int PageNumber { get; }
         public int PageSize { get; }
         public int ItemCount { get; }
         [JsonPropertyName("data")]
-        public IEnumerable<GetDepartmentDTO> Departments { get; }
+        public IEnumerable<GetEmployeeDTO> Employees { get; }
 
-        public GetManyDepartmentDTO(int pageNumber, int pageSize, int itemCount, IEnumerable<GetDepartmentDTO> departments)
+        public GetManyEmployeesDTO(int pageNumber, int pageSize, int itemCount, IEnumerable<GetEmployeeDTO> employees)
         {
             this.PageNumber = pageNumber;
             this.PageSize = pageSize;
             this.ItemCount = itemCount;
-            this.Departments = departments;
+            this.Employees = employees;
         }
     }
 }
