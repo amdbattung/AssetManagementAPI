@@ -82,7 +82,7 @@ namespace AssetManagementAPI.Controllers
             }
 
             Employee? response = await _employeeRepository.CreateAsync(employee);
-            return response == null ? NotFound() : CreatedAtAction(nameof(ShowAsync), new { id = response.Id }, response.ToDto());
+            return response == null ? BadRequest(ModelState) : CreatedAtAction(nameof(ShowAsync), new { id = response.Id }, response.ToDto());
         }
 
         [HttpGet("{id}", Name = "ShowEmployee")]
@@ -137,11 +137,6 @@ namespace AssetManagementAPI.Controllers
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BadRequest("Null or invalid id");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
             }
 
             Employee? response = await _employeeRepository.DeleteAsync(id);

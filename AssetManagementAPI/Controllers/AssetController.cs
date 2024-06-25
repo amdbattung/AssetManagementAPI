@@ -55,24 +55,23 @@ namespace AssetManagementAPI.Controllers
             }
             
             var assets = await _assetRepository.GetAllAsync(queryObject);
-            GetManyAssetsDTO response = new(
+
+            return Ok(new GetManyAssetsDTO(
                 pageNumber: assets.PageNumber,
                 pageSize: assets.PageSize,
                 itemCount: assets.ItemCount,
-                assets: assets.Data.Select(d => d.ToDto())
-            );
-
-            try
-            {
-                return Ok(response);
-            }
-            finally
-            {
-                foreach (Asset asset in assets.Data)
+                assets: assets.Data.Select(d =>
                 {
-                    asset.Dispose();
-                }
-            }
+                    try
+                    {
+                        return d.ToDto();
+                    }
+                    finally
+                    {
+                        d.Dispose();
+                    }
+                })
+            ));
 
             /*return Ok(new GetManyAssetsDTO(
                 pageNumber: assets.PageNumber,
@@ -100,7 +99,7 @@ namespace AssetManagementAPI.Controllers
                 }
 
                 using Asset? response = await _assetRepository.CreateAsync(asset);
-                return response == null ? NotFound() : CreatedAtAction(nameof(ShowAsync), new { id = response.Id }, response.ToDto());
+                return response == null ? BadRequest(ModelState) : CreatedAtAction(nameof(ShowAsync), new { id = response.Id }, response.ToDto());
         }
 
         [HttpGet("{id}", Name = "ShowAsset")]
@@ -154,11 +153,6 @@ namespace AssetManagementAPI.Controllers
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BadRequest("Null or invalid id");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
             }
 
             using Asset? response = await _assetRepository.DeleteAsync(id);

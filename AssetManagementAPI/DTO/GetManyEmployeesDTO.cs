@@ -2,6 +2,7 @@
 
 namespace AssetManagementAPI.DTO
 {
+    [Serializable]
     public class GetManyEmployeesDTO
     {
         public int PageNumber { get; }

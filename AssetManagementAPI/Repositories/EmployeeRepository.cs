@@ -47,9 +47,9 @@ namespace AssetManagementAPI.Repositories
                 #nullable disable
                 Id = null,
                 #nullable restore
-                LastName = employee.LastName,
-                FirstName = employee.FirstName,
-                MiddleName = employee.MiddleName,
+                LastName = employee.LastName?.Trim(),
+                FirstName = employee.FirstName?.Trim(),
+                MiddleName = employee.MiddleName?.Trim(),
                 Department = employee.DepartmentId != null ? await _context.Departments.FirstOrDefaultAsync(d => d.Id == employee.DepartmentId) : null
             };
 
@@ -64,7 +64,7 @@ namespace AssetManagementAPI.Repositories
 
         public async Task<Employee?> GetByIdAsync(string id)
         {
-            return await _context.Employees.Where(e => e.Id == id).FirstOrDefaultAsync();
+            return await _context.Employees.Where(e => e.Id == id).Include(e => e.Department).FirstOrDefaultAsync();
         }
 
         public async Task<Employee?> UpdateAsync(string id, UpdateEmployeeDTO employee)
@@ -76,17 +76,18 @@ namespace AssetManagementAPI.Repositories
                 return null;
             }
 
-            existingEmployee.LastName = employee.LastName;
-            existingEmployee.FirstName = employee.FirstName;
-            existingEmployee.MiddleName = employee.MiddleName;
-            existingEmployee.Department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == employee.DepartmentId);
+            existingEmployee.LastName = employee.LastName?.Trim();
+            existingEmployee.FirstName = employee.FirstName?.Trim();
+            existingEmployee.MiddleName = employee.MiddleName?.Trim();
+            existingEmployee.Department = employee.DepartmentId != null ? await _context.Departments.FirstOrDefaultAsync(d => d.Id == employee.DepartmentId) : null;
 
-            return await _context.SaveChangesAsync() > 0 ? existingEmployee : null;
+            await _context.SaveChangesAsync();
+            return existingEmployee;
         }
 
         public async Task<Employee?> DeleteAsync(string id)
         {
-            Employee? employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
+            Employee? employee = await _context.Employees.Include(e => e.Department).FirstOrDefaultAsync(e => e.Id == id);
 
             if (employee == null)
             {

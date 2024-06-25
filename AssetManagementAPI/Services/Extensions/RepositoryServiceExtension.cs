@@ -10,6 +10,8 @@ namespace AssetManagementAPI.Services.Extensions
             services.AddScoped<IAssetRepository, AssetRepository>();
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            //
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
 
             return services;
         }

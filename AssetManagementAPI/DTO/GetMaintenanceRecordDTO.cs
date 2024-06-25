@@ -1,4 +1,5 @@
-﻿using static AssetManagementAPI.Models.MaintenanceRecord;
+﻿using System.Text.Json.Serialization;
+using static AssetManagementAPI.Models.MaintenanceRecord;
 
 namespace AssetManagementAPI.DTO
 {

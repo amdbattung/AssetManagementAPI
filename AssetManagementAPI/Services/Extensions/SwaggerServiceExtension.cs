@@ -1,4 +1,6 @@
 ﻿using Microsoft.OpenApi.Models;
+using NodaTime;
+using System.Transactions;
 
 namespace AssetManagementAPI.Services.Extensions
 {
@@ -35,6 +37,13 @@ namespace AssetManagementAPI.Services.Extensions
                         new List<string>()
                     }
                 });
+
+                c.MapType<Instant>(() => new OpenApiSchema { Type = "string", Format = "date-time" });
+                c.MapType<LocalDate>(() => new OpenApiSchema { Type = "string", Format = "date" });
+                c.MapType<LocalDateTime>(() => new OpenApiSchema { Type = "string", Format = "date-time" });
+                c.MapType<OffsetDateTime>(() => new OpenApiSchema { Type = "string", Format = "date-time" });
+                c.MapType<ZonedDateTime>(() => new OpenApiSchema { Type = "string", Format = "date-time" });
+                c.MapType<Duration>(() => new OpenApiSchema { Type = "string", Format = "duration" });
             });
 
             return services;

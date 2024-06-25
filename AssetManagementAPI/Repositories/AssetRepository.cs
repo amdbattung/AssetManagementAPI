@@ -42,14 +42,14 @@ namespace AssetManagementAPI.Repositories
 
         public async Task<Asset?> CreateAsync(CreateAssetDTO asset)
         {
-            using Asset newAsset = new()
+            Asset newAsset = new()
             {
                 #nullable disable
                 Id = null,
                 #nullable restore
                 Type = asset.Type,
-                Name = asset.Name ?? "",
-                Info = !string.IsNullOrEmpty(asset.Info) ? JsonDocument.Parse(asset.Info) : null,
+                Name = asset.Name?.Trim() ?? "",
+                Info = asset.Info != null ? JsonDocument.Parse(((JsonElement)asset.Info).GetRawText()) : null,
                 Proprietor = asset.ProprietorId != null ? await _context.Departments.FirstOrDefaultAsync(d => d.Id == asset.ProprietorId) : null,
                 Custodian = asset.CustodianId != null ? await _context.Employees.FirstOrDefaultAsync(e => e.Id == asset.CustodianId) : null,
                 IsActive = true
@@ -77,7 +77,7 @@ namespace AssetManagementAPI.Repositories
 
         public async Task<Asset?> UpdateAsync(string id, UpdateAssetDTO asset)
         {
-            using Asset? existingAsset = await _context.Assets.FirstOrDefaultAsync(a => a.Id == id);
+            Asset? existingAsset = await _context.Assets.FirstOrDefaultAsync(a => a.Id == id);
 
             if (existingAsset == null)
             {
@@ -85,18 +85,19 @@ namespace AssetManagementAPI.Repositories
             }
 
             existingAsset.Type = asset.Type;
-            existingAsset.Name = asset.Name ?? existingAsset.Name;
-            existingAsset.Info = !string.IsNullOrEmpty(asset.Info) ? JsonDocument.Parse(asset.Info) : null;
-            existingAsset.Proprietor = await _context.Departments.FirstOrDefaultAsync(d => d.Id == asset.ProprietorId);
-            existingAsset.Custodian = await _context.Employees.FirstOrDefaultAsync(e => e.Id == asset.CustodianId);
+            existingAsset.Name = asset.Name?.Trim() ?? existingAsset.Name;
+            existingAsset.Info = asset.Info != null ? JsonDocument.Parse(((JsonElement)asset.Info).GetRawText()) : null;
+            existingAsset.Proprietor = asset.ProprietorId != null ? await _context.Departments.FirstOrDefaultAsync(d => d.Id == asset.ProprietorId) : null;
+            existingAsset.Custodian = asset.CustodianId != null ? await _context.Employees.FirstOrDefaultAsync(e => e.Id == asset.CustodianId) : null;
             existingAsset.IsActive = asset.IsActive ?? existingAsset.IsActive;
 
-            return await _context.SaveChangesAsync() > 0 ? existingAsset : null;
+            await _context.SaveChangesAsync();
+            return existingAsset;
         }
 
         public async Task<Asset?> DeleteAsync(string id)
         {
-           using Asset? asset = await _context.Assets.FirstOrDefaultAsync(a => a.Id == id);
+           Asset? asset = await _context.Assets.FirstOrDefaultAsync(a => a.Id == id);
 
             if (asset == null)
             {

@@ -1,5 +1,7 @@
 using AssetManagementAPI.Services.Extensions;
 using Microsoft.Net.Http.Headers;
+using NodaTime.Serialization.SystemTextJson;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,9 +19,15 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddKeycloakAuth(builder.Configuration);
 
-builder.Services.AddControllers(options => {
+builder.Services.AddControllers(options =>
+{
     options.SuppressAsyncSuffixInActionNames = false;
-});
+})
+    .AddJsonOptions(config =>
+    {
+        config.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        config.JsonSerializerOptions.ConfigureForNodaTime(NodaTime.DateTimeZoneProviders.Tzdb);
+    });
 
 builder.Services.AddEndpointsApiExplorer();
 
