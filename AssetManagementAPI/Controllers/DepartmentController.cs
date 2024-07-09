@@ -83,6 +83,8 @@ namespace AssetManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            department.Name = department.Name?.Trim();
+
             Department? response = await _departmentRepository.CreateAsync(department);
             return response == null ? BadRequest(ModelState) : CreatedAtAction(nameof(ShowAsync), new { id = response.Id }, response.ToDto());
         }
@@ -125,6 +127,8 @@ namespace AssetManagementAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
+
+            department.Name = department.Name?.Trim();
 
             Department? response = await _departmentRepository.UpdateAsync(id, department);
             return response == null ? NotFound() : Ok(response.ToDto());

@@ -5,36 +5,35 @@ using AssetManagementAPI.Services.Helpers;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using FluentValidation.Results;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssetManagementAPI.Controllers
 {
     [ApiController]
     /*[Authorize]*/
-    [Route("api/employees")]
-    public class EmployeeController : Controller
+    [Route("api/maintenance-records")]
+    public class MaintenanceRecordController : Controller
     {
-        private readonly IEmployeeRepository _employeeRepository;
-        private readonly IValidator<CreateEmployeeDTO> _createEmployeeValidator;
-        private readonly IValidator<UpdateEmployeeDTO> _updateEmployeeValidator;
+        private readonly IMaintenanceRecordRepository _maintenanceRecordRepository;
+        private readonly IValidator<CreateMaintenanceRecordDTO> _createMaintenanceRecordValidator;
+        private readonly IValidator<UpdateMaintenanceRecordDTO> _updateMaintenanceRecordValidator;
         private readonly IValidator<QueryObject> _queryObjectValidator;
 
-        public EmployeeController(IEmployeeRepository employeeRepository,
-            IValidator<CreateEmployeeDTO> createEmployeeValidator,
-            IValidator<UpdateEmployeeDTO> updateEmployeeValidator,
+        public MaintenanceRecordController(IMaintenanceRecordRepository maintenanceRecordRepository,
+            IValidator<CreateMaintenanceRecordDTO> createMaintenanceRecordValidator,
+            IValidator<UpdateMaintenanceRecordDTO> updateMaintenanceRecordValidator,
             IValidator<QueryObject> queryObjectValidator)
         {
-            this._employeeRepository = employeeRepository;
-            this._createEmployeeValidator = createEmployeeValidator;
-            this._updateEmployeeValidator = updateEmployeeValidator;
-            this._queryObjectValidator = queryObjectValidator;
+            _maintenanceRecordRepository = maintenanceRecordRepository;
+            _createMaintenanceRecordValidator = createMaintenanceRecordValidator;
+            _updateMaintenanceRecordValidator = updateMaintenanceRecordValidator;
+            _queryObjectValidator = queryObjectValidator;
         }
 
-        [HttpGet(Name = "IndexEmployees")]
+        [HttpGet(Name = "IndexMaintenanceRecords")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<GetEmployeeDTO>>> IndexAsync([FromQuery] QueryObject? queryObject)
+        public async Task<ActionResult<GetManyMaintenanceRecordsDTO>> IndexAsync([FromQuery] QueryObject? queryObject)
         {
             if (queryObject != null)
             {
@@ -54,22 +53,22 @@ namespace AssetManagementAPI.Controllers
                 }
             }
 
-            var employees = await _employeeRepository.GetAllAsync(queryObject);
+            var records = await _maintenanceRecordRepository.GetAllAsync(queryObject);
 
-            return Ok(new GetManyEmployeesDTO(
-                pageNumber: employees.PageNumber,
-                pageSize: employees.PageSize,
-                itemCount: employees.ItemCount,
-                employees: employees.Data.Select(e => e.ToDto())
+            return Ok(new GetManyMaintenanceRecordsDTO(
+                pageNumber: records.PageNumber,
+                pageSize: records.PageSize,
+                itemCount: records.ItemCount,
+                maintenanceRecords: records.Data.Select(t => t.ToDto())
             ));
         }
 
-        [HttpPost(Name = "CreateEmployee")]
+        [HttpPost(Name = "CreateMaintenanceRecord")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<GetEmployeeDTO>> CreateAsync([FromBody] CreateEmployeeDTO employee)
+        public async Task<ActionResult<GetMaintenanceRecordDTO>> CreateAsync([FromBody] CreateMaintenanceRecordDTO record)
         {
-            ValidationResult validationResult = await _createEmployeeValidator.ValidateAsync(employee);
+            ValidationResult validationResult = await _createMaintenanceRecordValidator.ValidateAsync(record);
 
             if (!validationResult.IsValid)
             {
@@ -81,42 +80,41 @@ namespace AssetManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            employee.LastName = employee.LastName?.Trim();
-            employee.FirstName = employee.FirstName?.Trim();
-            employee.MiddleName = employee.MiddleName?.Trim();
+            record.Reason = record.Reason?.Trim();
+            record.Comment = record.Comment?.Trim();
 
-            Employee? response = await _employeeRepository.CreateAsync(employee);
+            MaintenanceRecord? response = await _maintenanceRecordRepository.CreateAsync(record);
             return response == null ? BadRequest(ModelState) : CreatedAtAction(nameof(ShowAsync), new { id = response.Id }, response.ToDto());
         }
 
-        [HttpGet("{id}", Name = "ShowEmployee")]
+        [HttpGet("{id}", Name = "ShowMaintenanceRecord")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GetEmployeeDTO>> ShowAsync([FromRoute] string id)
+        public async Task<ActionResult<GetMaintenanceRecordDTO>> ShowAsync([FromRoute] string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BadRequest("Null or invalid id");
             }
 
-            Employee? employee = await _employeeRepository.GetByIdAsync(id);
+            MaintenanceRecord? record = await _maintenanceRecordRepository.GetByIdAsync(id);
 
-            return employee == null ? NotFound() : Ok(employee.ToDto());
+            return record == null ? NotFound() : Ok(record.ToDto());
         }
 
-        [HttpPut("{id}", Name = "UpdateEmployee")]
+        [HttpPut("{id}", Name = "UpdateMaintenanceRecord")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GetEmployeeDTO>> UpdateAsync([FromRoute] string id, [FromBody] UpdateEmployeeDTO employee)
+        public async Task<ActionResult<GetTransactionDTO>> UpdateAsync([FromRoute] string id, [FromBody] UpdateMaintenanceRecordDTO record)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BadRequest("Null or invalid id");
             }
 
-            ValidationResult validationResult = await _updateEmployeeValidator.ValidateAsync(employee);
+            ValidationResult validationResult = await _updateMaintenanceRecordValidator.ValidateAsync(record);
 
             if (!validationResult.IsValid)
             {
@@ -128,26 +126,25 @@ namespace AssetManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            employee.LastName = employee.LastName?.Trim();
-            employee.FirstName = employee.FirstName?.Trim();
-            employee.MiddleName = employee.MiddleName?.Trim();
+            record.Reason = record.Reason?.Trim();
+            record.Comment = record.Comment?.Trim();
 
-            Employee? response = await _employeeRepository.UpdateAsync(id, employee);
+            MaintenanceRecord? response = await _maintenanceRecordRepository.UpdateAsync(id, record);
             return response == null ? NotFound() : Ok(response.ToDto());
         }
 
-        [HttpDelete("{id}", Name = "DestroyEmployee")]
+        [HttpDelete("{id}", Name = "DestroyMaintenanceRecord")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GetEmployeeDTO>> DestroyAsync([FromRoute] string id)
+        public async Task<ActionResult<GetMaintenanceRecordDTO>> DestroyAsync([FromRoute] string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BadRequest("Null or invalid id");
             }
 
-            Employee? response = await _employeeRepository.DeleteAsync(id);
+            MaintenanceRecord? response = await _maintenanceRecordRepository.DeleteAsync(id);
             return response == null ? NotFound() : Ok(response.ToDto());
         }
     }

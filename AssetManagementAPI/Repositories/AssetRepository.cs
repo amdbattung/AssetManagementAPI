@@ -48,7 +48,7 @@ namespace AssetManagementAPI.Repositories
                 Id = null,
                 #nullable restore
                 Type = asset.Type,
-                Name = asset.Name?.Trim() ?? "",
+                Name = asset.Name ?? "",
                 Info = asset.Info != null ? JsonDocument.Parse(((JsonElement)asset.Info).GetRawText()) : null,
                 Proprietor = asset.ProprietorId != null ? await _context.Departments.FirstOrDefaultAsync(d => d.Id == asset.ProprietorId) : null,
                 Custodian = asset.CustodianId != null ? await _context.Employees.FirstOrDefaultAsync(e => e.Id == asset.CustodianId) : null,
@@ -85,7 +85,7 @@ namespace AssetManagementAPI.Repositories
             }
 
             existingAsset.Type = asset.Type;
-            existingAsset.Name = asset.Name?.Trim() ?? existingAsset.Name;
+            existingAsset.Name = asset.Name ?? existingAsset.Name;
             existingAsset.Info = asset.Info != null ? JsonDocument.Parse(((JsonElement)asset.Info).GetRawText()) : null;
             existingAsset.Proprietor = asset.ProprietorId != null ? await _context.Departments.FirstOrDefaultAsync(d => d.Id == asset.ProprietorId) : null;
             existingAsset.Custodian = asset.CustodianId != null ? await _context.Employees.FirstOrDefaultAsync(e => e.Id == asset.CustodianId) : null;

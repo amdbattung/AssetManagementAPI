@@ -46,7 +46,7 @@ namespace AssetManagementAPI.Repositories
                 #nullable disable
                 Id = null,
                 #nullable restore
-                Name = department.Name?.Trim() ?? ""
+                Name = department.Name ?? ""
             };
 
             await _context.Departments.AddAsync(newDepartment);
@@ -67,7 +67,7 @@ namespace AssetManagementAPI.Repositories
                 return null;
             }
 
-            existingDepartment.Name = department.Name?.Trim() ?? existingDepartment.Name;
+            existingDepartment.Name = department.Name ?? existingDepartment.Name;
 
             await _context.SaveChangesAsync();
             return existingDepartment;

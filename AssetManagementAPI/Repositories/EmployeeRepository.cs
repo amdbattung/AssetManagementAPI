@@ -47,9 +47,9 @@ namespace AssetManagementAPI.Repositories
                 #nullable disable
                 Id = null,
                 #nullable restore
-                LastName = employee.LastName?.Trim(),
-                FirstName = employee.FirstName?.Trim(),
-                MiddleName = employee.MiddleName?.Trim(),
+                LastName = employee.LastName,
+                FirstName = employee.FirstName,
+                MiddleName = employee.MiddleName,
                 Department = employee.DepartmentId != null ? await _context.Departments.FirstOrDefaultAsync(d => d.Id == employee.DepartmentId) : null
             };
 
@@ -76,9 +76,9 @@ namespace AssetManagementAPI.Repositories
                 return null;
             }
 
-            existingEmployee.LastName = employee.LastName?.Trim();
-            existingEmployee.FirstName = employee.FirstName?.Trim();
-            existingEmployee.MiddleName = employee.MiddleName?.Trim();
+            existingEmployee.LastName = employee.LastName;
+            existingEmployee.FirstName = employee.FirstName;
+            existingEmployee.MiddleName = employee.MiddleName;
             existingEmployee.Department = employee.DepartmentId != null ? await _context.Departments.FirstOrDefaultAsync(d => d.Id == employee.DepartmentId) : null;
 
             await _context.SaveChangesAsync();

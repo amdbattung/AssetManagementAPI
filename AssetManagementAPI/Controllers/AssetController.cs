@@ -98,6 +98,8 @@ namespace AssetManagementAPI.Controllers
                     return BadRequest(ModelState);
                 }
 
+                asset.Name = asset.Name?.Trim();
+
                 using Asset? response = await _assetRepository.CreateAsync(asset);
                 return response == null ? BadRequest(ModelState) : CreatedAtAction(nameof(ShowAsync), new { id = response.Id }, response.ToDto());
         }
@@ -139,6 +141,8 @@ namespace AssetManagementAPI.Controllers
                 {
                     return BadRequest(ModelState);
                 }
+
+                asset.Name = asset.Name?.Trim();
 
                 using Asset? response = await _assetRepository.UpdateAsync(id, asset);
                 return response == null ? NotFound() : Ok(response.ToDto());

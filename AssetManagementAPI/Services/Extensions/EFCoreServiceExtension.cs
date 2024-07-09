@@ -16,8 +16,7 @@ namespace AssetManagementAPI.Services.Extensions
             var dataSource = dataSourceBuilder.Build();
             services.AddDbContext<DataContext>(options =>
             {
-                options
-                    .UseNpgsql(dataSource, o => o.UseNodaTime());
+                options.UseNpgsql(dataSource, o => o.UseNodaTime());
             });
 
             return services;

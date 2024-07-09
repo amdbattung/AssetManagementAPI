@@ -17,6 +17,8 @@ namespace AssetManagementAPI.Services.Extensions
             services.AddScoped<IValidator<UpdateEmployeeDTO>, UpdateEmployeeValidator>();
             services.AddScoped<IValidator<CreateTransactionDTO>, CreateTransactionValidator>();
             services.AddScoped<IValidator<UpdateTransactionDTO>, UpdateTransactionValidator>();
+            services.AddScoped<IValidator<CreateMaintenanceRecordDTO>, CreateMaintenanceRecordValidator>();
+            services.AddScoped<IValidator<UpdateMaintenanceRecordDTO>, UpdateMaintenanceRecordValidator>();
             services.AddScoped<IValidator<QueryObject>, QueryObjectValidator>();
 
             return services;

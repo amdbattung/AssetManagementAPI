@@ -1,9 +1,7 @@
 ﻿using AssetManagementAPI.DTO;
 using AssetManagementAPI.Interfaces;
 using AssetManagementAPI.Models;
-using AssetManagementAPI.Repositories;
 using AssetManagementAPI.Services.Helpers;
-using AssetManagementAPI.Services.Validation;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using FluentValidation.Results;
@@ -82,6 +80,9 @@ namespace AssetManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            transaction.Reason = transaction.Reason?.Trim();
+            transaction.Remark = transaction.Remark?.Trim();
+
             Transaction? response = await _transactionRepository.CreateAsync(transaction);
             return response == null ? BadRequest(ModelState) : CreatedAtAction(nameof(ShowAsync), new { id = response.Id }, response.ToDto());
         }
@@ -124,6 +125,9 @@ namespace AssetManagementAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
+
+            transaction.Reason = transaction.Reason?.Trim();
+            transaction.Remark = transaction.Remark?.Trim();
 
             Transaction? response = await _transactionRepository.UpdateAsync(id, transaction);
             return response == null ? NotFound() : Ok(response.ToDto());
