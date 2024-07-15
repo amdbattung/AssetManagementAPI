@@ -18,13 +18,13 @@ namespace AssetManagementAPI.Controllers
         private readonly IValidator<CreateMaintenanceRecordDTO> _createMaintenanceRecordValidator;
         private readonly IValidator<UpdateMaintenanceRecordDTO> _updateMaintenanceRecordValidator;
         private readonly IValidator<QueryObject> _queryObjectValidator;
-        private readonly ILogger<DepartmentController> _logger;
+        private readonly ILogger<MaintenanceRecordController> _logger;
 
         public MaintenanceRecordController(IMaintenanceRecordRepository maintenanceRecordRepository,
             IValidator<CreateMaintenanceRecordDTO> createMaintenanceRecordValidator,
             IValidator<UpdateMaintenanceRecordDTO> updateMaintenanceRecordValidator,
             IValidator<QueryObject> queryObjectValidator,
-            ILogger<DepartmentController> logger)
+            ILogger<MaintenanceRecordController> logger)
         {
             this._maintenanceRecordRepository = maintenanceRecordRepository;
             this._createMaintenanceRecordValidator = createMaintenanceRecordValidator;
