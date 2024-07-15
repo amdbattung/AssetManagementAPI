@@ -9,6 +9,7 @@ namespace AssetManagementAPI.Services.Validation
         {
             RuleFor(x => x.PageNumber)
                 .GreaterThanOrEqualTo(1)
+                .OverridePropertyName("pageNumber")
                 .WithMessage("Invalid page number.")
                 .WithErrorCode("QERR0001");
 
@@ -16,6 +17,7 @@ namespace AssetManagementAPI.Services.Validation
                 .GreaterThanOrEqualTo(1)
                 .WithMessage("Invalid page size.")
                 .LessThanOrEqualTo(50)
+                .OverridePropertyName("pageSize")
                 .WithMessage("Page size too large.")
                 .WithErrorCode("QERR0002");
         }

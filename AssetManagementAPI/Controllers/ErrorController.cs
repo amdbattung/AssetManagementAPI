@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace AssetManagementAPI.Controllers
 {
     [ApiController]
-    [Route("api/departments")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public class ErrorController : Controller
     {

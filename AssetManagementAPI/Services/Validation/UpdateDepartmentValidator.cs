@@ -9,6 +9,7 @@ namespace AssetManagementAPI.Services.Validation
         {
             RuleFor(x => x.Name)
                 .NotEmpty()
+                .OverridePropertyName("name")
                 .WithMessage("Name is required.");
         }
     }

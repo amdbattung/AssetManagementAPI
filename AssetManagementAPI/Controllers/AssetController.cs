@@ -19,16 +19,19 @@ namespace AssetManagementAPI.Controllers
         private readonly IValidator<CreateAssetDTO> _createAssetValidator;
         private readonly IValidator<UpdateAssetDTO> _updateAssetValidator;
         private readonly IValidator<QueryObject> _queryObjectValidator;
+        private readonly ILogger<AssetController> _logger;
 
         public AssetController(IAssetRepository assetRepository,
             IValidator<CreateAssetDTO> createAssetValidator,
             IValidator<UpdateAssetDTO> updateAssetValidator,
-            IValidator<QueryObject> queryObjectValidator)
+            IValidator<QueryObject> queryObjectValidator,
+            ILogger<AssetController> logger)
         {
             this._assetRepository = assetRepository;
             this._createAssetValidator = createAssetValidator;
             this._updateAssetValidator = updateAssetValidator;
             this._queryObjectValidator = queryObjectValidator;
+            this._logger = logger;
         }
 
         [HttpGet(Name = "IndexAssets")]

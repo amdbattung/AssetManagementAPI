@@ -1,8 +1,13 @@
+using AssetManagementAPI.Services.Errors;
 using AssetManagementAPI.Services.Extensions;
+using FluentValidation.AspNetCore;
 using Microsoft.Net.Http.Headers;
 using NodaTime.Serialization.SystemTextJson;
+using Serilog;
+using System;
 using System.Text.Json.Serialization;
 
+#region Add Services
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -29,31 +34,45 @@ builder.Services.AddControllers(options =>
         options.JsonSerializerOptions.ConfigureForNodaTime(NodaTime.DateTimeZoneProviders.Tzdb);
     });
 
+//
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
+//
+
+builder.Services.AddFluentValidationAutoValidation();
+
+builder.Services.AddExceptionHandler<GlobalErrorHandler>();
+builder.Services.AddCustomProblemDetails();
+
 builder.Services.AddEndpointsApiExplorer();
 
+// New repositories and validators should be registered inside these service extensions.
 builder.Services.AddRepository();
 builder.Services.AddValidator();
 
 builder.Services.AddEFCore(builder.Configuration);
+#endregion
 
-// Build app
+#region Build App
 var app = builder.Build();
 
+app.Logger.LogInformation("Starting up server");
+
 // Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
-
-if (app.Environment.IsDevelopment())
-{
+    app.UseDeveloperExceptionPage();
     app.UseExceptionHandler("/error-development");
 }
 else
 {
     app.UseExceptionHandler("/error");
 }
+
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
@@ -66,3 +85,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+#endregion

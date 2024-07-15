@@ -18,16 +18,19 @@ namespace AssetManagementAPI.Controllers
         private readonly IValidator<CreateTransactionDTO> _createTransactionValidator;
         private readonly IValidator<UpdateTransactionDTO> _updateTransactionValidator;
         private readonly IValidator<QueryObject> _queryObjectValidator;
+        private readonly ILogger<DepartmentController> _logger;
 
         public TransactionController(ITransactionRepository transactionRepository,
             IValidator<CreateTransactionDTO> createTransactionValidator,
             IValidator<UpdateTransactionDTO> updateTransactionValidator,
-            IValidator<QueryObject> queryObjectValidator)
+            IValidator<QueryObject> queryObjectValidator,
+            ILogger<DepartmentController> logger)
         {
             this._transactionRepository = transactionRepository;
             this._createTransactionValidator = createTransactionValidator;
             this._updateTransactionValidator = updateTransactionValidator;
             this._queryObjectValidator = queryObjectValidator;
+            this._logger = logger;
         }
 
         [HttpGet(Name = "IndexTransaction")]

@@ -19,16 +19,19 @@ namespace AssetManagementAPI.Controllers
         private readonly IValidator<CreateEmployeeDTO> _createEmployeeValidator;
         private readonly IValidator<UpdateEmployeeDTO> _updateEmployeeValidator;
         private readonly IValidator<QueryObject> _queryObjectValidator;
+        private readonly ILogger<DepartmentController> _logger;
 
         public EmployeeController(IEmployeeRepository employeeRepository,
             IValidator<CreateEmployeeDTO> createEmployeeValidator,
             IValidator<UpdateEmployeeDTO> updateEmployeeValidator,
-            IValidator<QueryObject> queryObjectValidator)
+            IValidator<QueryObject> queryObjectValidator,
+            ILogger<DepartmentController> logger)
         {
             this._employeeRepository = employeeRepository;
             this._createEmployeeValidator = createEmployeeValidator;
             this._updateEmployeeValidator = updateEmployeeValidator;
             this._queryObjectValidator = queryObjectValidator;
+            this._logger = logger;
         }
 
         [HttpGet(Name = "IndexEmployees")]

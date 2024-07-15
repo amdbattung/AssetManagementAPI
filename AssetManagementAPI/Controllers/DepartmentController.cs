@@ -7,6 +7,7 @@ using FluentValidation.AspNetCore;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Xml.Linq;
 
 namespace AssetManagementAPI.Controllers
 {
@@ -19,16 +20,19 @@ namespace AssetManagementAPI.Controllers
         private readonly IValidator<CreateDepartmentDTO> _createDepartmentValidator;
         private readonly IValidator<UpdateDepartmentDTO> _updateDepartmentValidator;
         private readonly IValidator<QueryObject> _queryObjectValidator;
+        private readonly ILogger<DepartmentController> _logger;
 
         public DepartmentController(IDepartmentRepository departmentRepository,
             IValidator<CreateDepartmentDTO> createDepartmentValidator,
             IValidator<UpdateDepartmentDTO> updateDepartmentValidator,
-            IValidator<QueryObject> queryObjectValidator)
+            IValidator<QueryObject> queryObjectValidator,
+            ILogger<DepartmentController> logger)
         {
             this._departmentRepository = departmentRepository;
             this._createDepartmentValidator = createDepartmentValidator;
             this._updateDepartmentValidator = updateDepartmentValidator;
             this._queryObjectValidator = queryObjectValidator;
+            this._logger = logger;
         }
 
         [HttpGet(Name = "IndexDepartments")]

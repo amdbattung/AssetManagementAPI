@@ -9,14 +9,17 @@ namespace AssetManagementAPI.Services.Validation
         {
             RuleFor(x => x.LastName)
                 .Matches(@"^(?!\s*$).*")
+                .OverridePropertyName("lastName")
                 .WithMessage("Invalid last name.");
 
             RuleFor(x => x.FirstName)
                 .Matches(@"^(?!\s*$).*")
+                .OverridePropertyName("firstName")
                 .WithMessage("Invalid first name.");
 
             RuleFor(x => x.MiddleName)
                 .Matches(@"^(?!\s*$).*")
+                .OverridePropertyName("middleName")
                 .WithMessage("Invalid middle name.");
         }
     }

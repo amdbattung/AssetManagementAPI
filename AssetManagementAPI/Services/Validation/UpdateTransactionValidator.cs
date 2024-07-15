@@ -9,10 +9,12 @@ namespace AssetManagementAPI.Services.Validation
         {
             RuleFor(x => x.Reason)
                 .Matches(@"^(?!\s*$)[ -~]{2,}$")
+                .OverridePropertyName("reason")
                 .WithMessage("Invalid reason.");
 
             RuleFor(x => x.Remark)
                 .Matches(@"^(?!\s*$)[ -~]{2,}$")
+                .OverridePropertyName("comment")
                 .WithMessage("Invalid remark.");
         }
     }

@@ -9,6 +9,7 @@ namespace AssetManagementAPI.Services.Extensions
     {
         public static IServiceCollection AddValidator(this IServiceCollection services)
         {
+            // Register validators here
             services.AddScoped<IValidator<CreateAssetDTO>, CreateAssetValidator>();
             services.AddScoped<IValidator<UpdateAssetDTO>, UpdateAssetValidator>();
             services.AddScoped<IValidator<CreateDepartmentDTO>, CreateDepartmentValidator>();
