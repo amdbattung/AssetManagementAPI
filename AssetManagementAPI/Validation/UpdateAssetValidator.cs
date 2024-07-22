@@ -1,11 +1,11 @@
 ﻿using AssetManagementAPI.DTO;
 using FluentValidation;
 
-namespace AssetManagementAPI.Services.Validation
+namespace AssetManagementAPI.Validation
 {
-    public class CreateAssetValidator : AbstractValidator<CreateAssetDTO>
+    public class UpdateAssetValidator : AbstractValidator<UpdateAssetDTO>
     {
-        public CreateAssetValidator()
+        public UpdateAssetValidator()
         {
             RuleFor(x => x.Type)
                 .Matches(@"^(?!\s*$)[ -~]{2,}$")

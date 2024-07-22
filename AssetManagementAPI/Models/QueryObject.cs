@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace AssetManagementAPI.Services.Helpers
+namespace AssetManagementAPI.Models
 {
     public class QueryObject
     {

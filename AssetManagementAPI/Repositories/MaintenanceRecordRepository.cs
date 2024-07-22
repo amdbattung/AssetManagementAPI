@@ -2,8 +2,8 @@
 using AssetManagementAPI.DTO;
 using AssetManagementAPI.Interfaces;
 using AssetManagementAPI.Models;
-using AssetManagementAPI.Services.Helpers;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 
 namespace AssetManagementAPI.Repositories
 {
@@ -21,6 +21,8 @@ namespace AssetManagementAPI.Repositories
         public async Task<(ICollection<MaintenanceRecord> Data, int PageNumber, int PageSize, int ItemCount)> GetAllAsync(QueryObject? queryObject)
         {
             var record = _context.MaintenanceRecords.AsQueryable();
+
+            record = record.OrderBy(r => EF.Property<Instant>(r, "DateCreated"));
 
             if (!string.IsNullOrWhiteSpace(queryObject?.Query))
             {

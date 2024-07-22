@@ -60,7 +60,7 @@ namespace AssetManagementAPI.Data
                 .Property<Instant?>("DateCreated")
                 .HasDefaultValueSql("now()");
 
-            //
+            // Defaults
             modelBuilder.Entity<MaintenanceRecord>()
                 .Property(b => b.Date)
                 .HasDefaultValueSql("now()");

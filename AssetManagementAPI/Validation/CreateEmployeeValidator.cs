@@ -1,11 +1,11 @@
 ﻿using AssetManagementAPI.DTO;
 using FluentValidation;
 
-namespace AssetManagementAPI.Services.Validation
+namespace AssetManagementAPI.Validation
 {
-    public class UpdateEmployeeValidator : AbstractValidator<UpdateEmployeeDTO>
+    public class CreateEmployeeValidator : AbstractValidator<CreateEmployeeDTO>
     {
-        public UpdateEmployeeValidator()
+        public CreateEmployeeValidator()
         {
             RuleFor(x => x.LastName)
                 .Matches(@"^(?!\s*$).*")

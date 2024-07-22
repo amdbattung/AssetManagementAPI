@@ -1,16 +1,22 @@
-using AssetManagementAPI.Services.Errors;
-using AssetManagementAPI.Services.Extensions;
+using AssetManagementAPI.Extensions;
+using AssetManagementAPI.Middlewares;
 using FluentValidation.AspNetCore;
 using Microsoft.Net.Http.Headers;
 using NodaTime.Serialization.SystemTextJson;
 using Serilog;
-using System;
 using System.Text.Json.Serialization;
 
 #region Add Services
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddHsts(options =>
+{
+    options.Preload = true;
+    options.IncludeSubDomains = true;
+    options.MaxAge = TimeSpan.FromDays(60);
+});
+
 builder.Services.AddSwaggerGen(builder.Configuration);
 
 builder.Services.AddCors(options =>
@@ -34,14 +40,12 @@ builder.Services.AddControllers(options =>
         options.JsonSerializerOptions.ConfigureForNodaTime(NodaTime.DateTimeZoneProviders.Tzdb);
     });
 
-//
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
-//
 
 builder.Services.AddFluentValidationAutoValidation();
 
-builder.Services.AddExceptionHandler<GlobalErrorHandler>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddCustomProblemDetails();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -59,7 +63,6 @@ var app = builder.Build();
 app.Logger.LogInformation("Starting up server");
 
 // Configure the HTTP request pipeline.
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -70,11 +73,11 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/error");
+    app.UseHsts();
+    app.UseHttpsRedirection();
 }
 
 app.UseSerilogRequestLogging();
-
-app.UseHttpsRedirection();
 
 app.UseCors();
 
@@ -83,6 +86,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+#endregion
 
 app.Run();
-#endregion

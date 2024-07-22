@@ -3,7 +3,7 @@ using AssetManagementAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
-namespace AssetManagementAPI.Services.Extensions
+namespace AssetManagementAPI.Extensions
 {
     public static class EFCoreServiceExtension
     {

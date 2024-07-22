@@ -1,7 +1,7 @@
-﻿using AssetManagementAPI.Services.Helpers;
+﻿using AssetManagementAPI.Models;
 using FluentValidation;
 
-namespace AssetManagementAPI.Services.Validation
+namespace AssetManagementAPI.Validation
 {
     public class QueryObjectValidator : AbstractValidator<QueryObject>
     {

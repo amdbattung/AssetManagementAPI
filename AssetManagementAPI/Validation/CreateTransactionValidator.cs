@@ -1,7 +1,7 @@
 ﻿using AssetManagementAPI.DTO;
 using FluentValidation;
 
-namespace AssetManagementAPI.Services.Validation
+namespace AssetManagementAPI.Validation
 {
     public class CreateTransactionValidator : AbstractValidator<CreateTransactionDTO>
     {

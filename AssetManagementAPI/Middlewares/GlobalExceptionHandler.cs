@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AssetManagementAPI.Services.Errors
+namespace AssetManagementAPI.Middlewares
 {
-    public class GlobalErrorHandler : IExceptionHandler
+    public class GlobalExceptionHandler : IExceptionHandler
     {
-        private readonly ILogger<GlobalErrorHandler> _logger;
+        private readonly ILogger<GlobalExceptionHandler> _logger;
 
-        public GlobalErrorHandler(ILogger<GlobalErrorHandler> logger)
+        public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
         {
 
             _logger = logger;

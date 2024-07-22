@@ -1,21 +1,21 @@
 ﻿using AssetManagementAPI.DTO;
 using FluentValidation;
 
-namespace AssetManagementAPI.Services.Validation
+namespace AssetManagementAPI.Validation
 {
-    public class UpdateTransactionValidator : AbstractValidator<UpdateTransactionDTO>
+    public class UpdateMaintenanceRecordValidator : AbstractValidator<UpdateMaintenanceRecordDTO>
     {
-        public UpdateTransactionValidator()
+        public UpdateMaintenanceRecordValidator()
         {
             RuleFor(x => x.Reason)
                 .Matches(@"^(?!\s*$)[ -~]{2,}$")
                 .OverridePropertyName("reason")
                 .WithMessage("Invalid reason.");
 
-            RuleFor(x => x.Remark)
+            RuleFor(x => x.Comment)
                 .Matches(@"^(?!\s*$)[ -~]{2,}$")
                 .OverridePropertyName("comment")
-                .WithMessage("Invalid remark.");
+                .WithMessage("Invalid comment.");
         }
     }
 }

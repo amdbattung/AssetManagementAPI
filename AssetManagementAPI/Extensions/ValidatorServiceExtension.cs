@@ -1,9 +1,9 @@
 ﻿using AssetManagementAPI.DTO;
-using AssetManagementAPI.Services.Helpers;
-using AssetManagementAPI.Services.Validation;
+using AssetManagementAPI.Models;
+using AssetManagementAPI.Validation;
 using FluentValidation;
 
-namespace AssetManagementAPI.Services.Extensions
+namespace AssetManagementAPI.Extensions
 {
     public static class ValidatorServiceExtension
     {

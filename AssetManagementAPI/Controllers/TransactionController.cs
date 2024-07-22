@@ -1,16 +1,16 @@
 ﻿using AssetManagementAPI.DTO;
 using AssetManagementAPI.Interfaces;
 using AssetManagementAPI.Models;
-using AssetManagementAPI.Services.Helpers;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssetManagementAPI.Controllers
 {
     [ApiController]
-    /*[Authorize]*/
+    [Authorize]
     [Route("api/transactions")]
     public class TransactionController : Controller
     {

@@ -1,11 +1,11 @@
 ﻿using AssetManagementAPI.DTO;
 using FluentValidation;
 
-namespace AssetManagementAPI.Services.Validation
+namespace AssetManagementAPI.Validation
 {
-    public class CreateDepartmentValidator : AbstractValidator<CreateDepartmentDTO>
+    public class UpdateDepartmentValidator : AbstractValidator<UpdateDepartmentDTO>
     {
-        public CreateDepartmentValidator()
+        public UpdateDepartmentValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty()

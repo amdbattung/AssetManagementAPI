@@ -1,10 +1,10 @@
-﻿using AssetManagementAPI.Services.Helpers;
+﻿using AssetManagementAPI.Services;
 using AssetManagementAPI.Services.Policies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 
-namespace AssetManagementAPI.Services.Extensions
+namespace AssetManagementAPI.Extensions
 {
     public static class AuthServiceExtension
     {

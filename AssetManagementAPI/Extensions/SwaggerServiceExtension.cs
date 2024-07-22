@@ -1,8 +1,8 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using AssetManagementAPI.Extensions;
+using Microsoft.OpenApi.Models;
 using NodaTime;
-using System.Transactions;
 
-namespace AssetManagementAPI.Services.Extensions
+namespace AssetManagementAPI.Extensions
 {
     public static class SwaggerServiceExtension
     {

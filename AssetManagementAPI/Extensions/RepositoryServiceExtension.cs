@@ -1,7 +1,7 @@
 ﻿using AssetManagementAPI.Interfaces;
 using AssetManagementAPI.Repositories;
 
-namespace AssetManagementAPI.Services.Extensions
+namespace AssetManagementAPI.Extensions
 {
     public static class RepositoryServiceExtension
     {

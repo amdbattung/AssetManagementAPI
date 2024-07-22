@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using System.Text.Json;
 
-namespace AssetManagementAPI.Services.Helpers
+namespace AssetManagementAPI.Services
 {
     public class ClaimsTransformer : IClaimsTransformation
     {
