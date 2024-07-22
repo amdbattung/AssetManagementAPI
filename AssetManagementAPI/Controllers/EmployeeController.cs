@@ -1,7 +1,6 @@
 ﻿using AssetManagementAPI.DTO;
 using AssetManagementAPI.Interfaces;
 using AssetManagementAPI.Models;
-using AssetManagementAPI.Services.Helpers;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using FluentValidation.Results;
@@ -11,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AssetManagementAPI.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/employees")]
     public class EmployeeController : Controller
     {
@@ -18,16 +18,19 @@ namespace AssetManagementAPI.Controllers
         private readonly IValidator<CreateEmployeeDTO> _createEmployeeValidator;
         private readonly IValidator<UpdateEmployeeDTO> _updateEmployeeValidator;
         private readonly IValidator<QueryObject> _queryObjectValidator;
+        private readonly ILogger<EmployeeController> _logger;
 
         public EmployeeController(IEmployeeRepository employeeRepository,
             IValidator<CreateEmployeeDTO> createEmployeeValidator,
             IValidator<UpdateEmployeeDTO> updateEmployeeValidator,
-            IValidator<QueryObject> queryObjectValidator)
+            IValidator<QueryObject> queryObjectValidator,
+            ILogger<EmployeeController> logger)
         {
             this._employeeRepository = employeeRepository;
             this._createEmployeeValidator = createEmployeeValidator;
             this._updateEmployeeValidator = updateEmployeeValidator;
             this._queryObjectValidator = queryObjectValidator;
+            this._logger = logger;
         }
 
         [HttpGet(Name = "IndexEmployees")]
@@ -55,7 +58,12 @@ namespace AssetManagementAPI.Controllers
 
             var employees = await _employeeRepository.GetAllAsync(queryObject);
 
-            return Ok(employees.Select(e => e.ToDto()));
+            return Ok(new GetManyEmployeesDTO(
+                pageNumber: employees.PageNumber,
+                pageSize: employees.PageSize,
+                itemCount: employees.ItemCount,
+                employees: employees.Data.Select(e => e.ToDto())
+            ));
         }
 
         [HttpPost(Name = "CreateEmployee")]
@@ -75,12 +83,15 @@ namespace AssetManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            employee.LastName = employee.LastName?.Trim();
+            employee.FirstName = employee.FirstName?.Trim();
+            employee.MiddleName = employee.MiddleName?.Trim();
+
             Employee? response = await _employeeRepository.CreateAsync(employee);
-            return response == null ? NotFound() : CreatedAtAction(nameof(ShowAsync), new { id = response.Id }, response.ToDto());
+            return response == null ? BadRequest(ModelState) : CreatedAtAction(nameof(ShowAsync), new { id = response.Id }, response.ToDto());
         }
 
         [HttpGet("{id}", Name = "ShowEmployee")]
-        [Authorize(Policy = "UserIsEmployeePolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -119,6 +130,10 @@ namespace AssetManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            employee.LastName = employee.LastName?.Trim();
+            employee.FirstName = employee.FirstName?.Trim();
+            employee.MiddleName = employee.MiddleName?.Trim();
+
             Employee? response = await _employeeRepository.UpdateAsync(id, employee);
             return response == null ? NotFound() : Ok(response.ToDto());
         }
@@ -132,11 +147,6 @@ namespace AssetManagementAPI.Controllers
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BadRequest("Null or invalid id");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
             }
 
             Employee? response = await _employeeRepository.DeleteAsync(id);

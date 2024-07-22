@@ -11,32 +11,32 @@ namespace AssetManagementAPI.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/departments")]
-    public class DepartmentController : Controller
+    [Route("api/maintenance-records")]
+    public class MaintenanceRecordController : Controller
     {
-        private readonly IDepartmentRepository _departmentRepository;
-        private readonly IValidator<CreateDepartmentDTO> _createDepartmentValidator;
-        private readonly IValidator<UpdateDepartmentDTO> _updateDepartmentValidator;
+        private readonly IMaintenanceRecordRepository _maintenanceRecordRepository;
+        private readonly IValidator<CreateMaintenanceRecordDTO> _createMaintenanceRecordValidator;
+        private readonly IValidator<UpdateMaintenanceRecordDTO> _updateMaintenanceRecordValidator;
         private readonly IValidator<QueryObject> _queryObjectValidator;
-        private readonly ILogger<DepartmentController> _logger;
+        private readonly ILogger<MaintenanceRecordController> _logger;
 
-        public DepartmentController(IDepartmentRepository departmentRepository,
-            IValidator<CreateDepartmentDTO> createDepartmentValidator,
-            IValidator<UpdateDepartmentDTO> updateDepartmentValidator,
+        public MaintenanceRecordController(IMaintenanceRecordRepository maintenanceRecordRepository,
+            IValidator<CreateMaintenanceRecordDTO> createMaintenanceRecordValidator,
+            IValidator<UpdateMaintenanceRecordDTO> updateMaintenanceRecordValidator,
             IValidator<QueryObject> queryObjectValidator,
-            ILogger<DepartmentController> logger)
+            ILogger<MaintenanceRecordController> logger)
         {
-            this._departmentRepository = departmentRepository;
-            this._createDepartmentValidator = createDepartmentValidator;
-            this._updateDepartmentValidator = updateDepartmentValidator;
+            this._maintenanceRecordRepository = maintenanceRecordRepository;
+            this._createMaintenanceRecordValidator = createMaintenanceRecordValidator;
+            this._updateMaintenanceRecordValidator = updateMaintenanceRecordValidator;
             this._queryObjectValidator = queryObjectValidator;
             this._logger = logger;
         }
 
-        [HttpGet(Name = "IndexDepartments")]
+        [HttpGet(Name = "IndexMaintenanceRecords")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<GetManyDepartmentsDTO>> IndexAsync([FromQuery] QueryObject? queryObject)
+        public async Task<ActionResult<GetManyMaintenanceRecordsDTO>> IndexAsync([FromQuery] QueryObject? queryObject)
         {
             if (queryObject != null)
             {
@@ -56,24 +56,22 @@ namespace AssetManagementAPI.Controllers
                 }
             }
 
-            var departments = await _departmentRepository.GetAllAsync(queryObject);
+            var records = await _maintenanceRecordRepository.GetAllAsync(queryObject);
 
-            /*return Ok(departments.Select(d => d.ToDto()));*/
-
-            return Ok(new GetManyDepartmentsDTO(
-                pageNumber: departments.PageNumber,
-                pageSize: departments.PageSize,
-                itemCount: departments.ItemCount,
-                departments: departments.Data.Select(d => d.ToDto())
+            return Ok(new GetManyMaintenanceRecordsDTO(
+                pageNumber: records.PageNumber,
+                pageSize: records.PageSize,
+                itemCount: records.ItemCount,
+                maintenanceRecords: records.Data.Select(t => t.ToDto())
             ));
         }
 
-        [HttpPost(Name = "CreateDepartment")]
+        [HttpPost(Name = "CreateMaintenanceRecord")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<GetDepartmentDTO>> CreateAsync([FromBody] CreateDepartmentDTO department)
+        public async Task<ActionResult<GetMaintenanceRecordDTO>> CreateAsync([FromBody] CreateMaintenanceRecordDTO record)
         {
-            ValidationResult validationResult = await _createDepartmentValidator.ValidateAsync(department);
+            ValidationResult validationResult = await _createMaintenanceRecordValidator.ValidateAsync(record);
 
             if (!validationResult.IsValid)
             {
@@ -85,40 +83,41 @@ namespace AssetManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            department.Name = department.Name?.Trim();
+            record.Reason = record.Reason?.Trim();
+            record.Comment = record.Comment?.Trim();
 
-            Department? response = await _departmentRepository.CreateAsync(department);
+            MaintenanceRecord? response = await _maintenanceRecordRepository.CreateAsync(record);
             return response == null ? BadRequest(ModelState) : CreatedAtAction(nameof(ShowAsync), new { id = response.Id }, response.ToDto());
         }
 
-        [HttpGet("{id}", Name = "ShowDepartment")]
+        [HttpGet("{id}", Name = "ShowMaintenanceRecord")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GetDepartmentDTO>> ShowAsync([FromRoute] string id)
+        public async Task<ActionResult<GetMaintenanceRecordDTO>> ShowAsync([FromRoute] string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BadRequest("Null or invalid id");
             }
 
-            Department? department = await _departmentRepository.GetByIdAsync(id);
+            MaintenanceRecord? record = await _maintenanceRecordRepository.GetByIdAsync(id);
 
-            return department == null ? NotFound() : Ok(department.ToDto());
+            return record == null ? NotFound() : Ok(record.ToDto());
         }
 
-        [HttpPut("{id}", Name = "UpdateDepartment")]
+        [HttpPut("{id}", Name = "UpdateMaintenanceRecord")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GetDepartmentDTO>> UpdateAsync([FromRoute] string id, [FromBody] UpdateDepartmentDTO department)
+        public async Task<ActionResult<GetTransactionDTO>> UpdateAsync([FromRoute] string id, [FromBody] UpdateMaintenanceRecordDTO record)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BadRequest("Null or invalid id");
             }
 
-            ValidationResult validationResult = await _updateDepartmentValidator.ValidateAsync(department);
+            ValidationResult validationResult = await _updateMaintenanceRecordValidator.ValidateAsync(record);
 
             if (!validationResult.IsValid)
             {
@@ -130,24 +129,25 @@ namespace AssetManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            department.Name = department.Name?.Trim();
+            record.Reason = record.Reason?.Trim();
+            record.Comment = record.Comment?.Trim();
 
-            Department? response = await _departmentRepository.UpdateAsync(id, department);
+            MaintenanceRecord? response = await _maintenanceRecordRepository.UpdateAsync(id, record);
             return response == null ? NotFound() : Ok(response.ToDto());
-        } 
+        }
 
-        [HttpDelete("{id}", Name = "DestroyDepartment")]
+        [HttpDelete("{id}", Name = "DestroyMaintenanceRecord")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GetDepartmentDTO>> DestroyAsync([FromRoute] string id)
+        public async Task<ActionResult<GetMaintenanceRecordDTO>> DestroyAsync([FromRoute] string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BadRequest("Null or invalid id");
             }
 
-            Department? response = await _departmentRepository.DeleteAsync(id);
+            MaintenanceRecord? response = await _maintenanceRecordRepository.DeleteAsync(id);
             return response == null ? NotFound() : Ok(response.ToDto());
         }
     }

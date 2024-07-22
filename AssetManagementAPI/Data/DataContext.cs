@@ -1,5 +1,7 @@
 ﻿using AssetManagementAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
+using System.Reflection.Metadata;
 
 namespace AssetManagementAPI.Data
 {
@@ -23,6 +25,7 @@ namespace AssetManagementAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Enums
             modelBuilder.HasPostgresEnum<MaintenanceRecord.MaintenanceAction>(name: "maintenance_action");
             modelBuilder.HasPostgresEnum<Transaction.TransactionType>(name: "transaction_type");
 
@@ -35,6 +38,62 @@ namespace AssetManagementAPI.Data
                 .Property(e => e.Type)
                 .HasConversion<string>()
                 .HasColumnType("transaction_type");*/
+
+            // Shadow Properties
+            modelBuilder.Entity<Asset>()
+                .Property<Instant?>("DateCreated")
+                .HasDefaultValueSql("now()");
+
+            modelBuilder.Entity<Department>()
+                .Property<Instant?>("DateCreated")
+                .HasDefaultValueSql("now()");
+
+            modelBuilder.Entity<Employee>()
+                .Property<Instant?>("DateCreated")
+                .HasDefaultValueSql("now()");
+
+            modelBuilder.Entity<MaintenanceRecord>()
+                .Property<Instant?>("DateCreated")
+                .HasDefaultValueSql("now()");
+
+            modelBuilder.Entity<Transaction>()
+                .Property<Instant?>("DateCreated")
+                .HasDefaultValueSql("now()");
+
+            // Defaults
+            modelBuilder.Entity<MaintenanceRecord>()
+                .Property(b => b.Date)
+                .HasDefaultValueSql("now()");
+
+            modelBuilder.Entity<Transaction>()
+                .Property(b => b.Date)
+                .HasDefaultValueSql("now()");
+
+            // Indexes
+            modelBuilder.Entity<Asset>()
+                .HasIndex(e => new { e.Type, e.Name })
+                .HasMethod("GIN")
+                .IsTsVectorExpressionIndex("simple");
+
+            modelBuilder.Entity<Department>()
+                .HasIndex(e => new { e.Name })
+                .IsUnique()
+                .IsTsVectorExpressionIndex("simple");
+
+            modelBuilder.Entity<Employee>()
+                .HasIndex(e => new { e.LastName, e.FirstName, e.MiddleName })
+                .HasMethod("GIN")
+                .IsTsVectorExpressionIndex("simple");
+
+            modelBuilder.Entity<MaintenanceRecord>()
+                .HasIndex(e => new { e.Reason, e.Comment })
+                .HasMethod("GIN")
+                .IsTsVectorExpressionIndex("english");
+
+            modelBuilder.Entity<Transaction>()
+                .HasIndex(e => new { e.Reason, e.Remark })
+                .HasMethod("GIN")
+                .IsTsVectorExpressionIndex("english");
 
             // Relationships
             modelBuilder.Entity<Department>()
@@ -71,22 +130,6 @@ namespace AssetManagementAPI.Data
                 .HasMany<Transaction>()
                 .WithOne(e => e.Approver)
                 .IsRequired(false);
-
-            // Indexes
-            modelBuilder.Entity<Asset>()
-                .HasIndex(e => new { e.Type, e.Name })
-                .HasMethod("GIN")
-                .IsTsVectorExpressionIndex("simple");
-
-            modelBuilder.Entity<Department>()
-                .HasIndex(e => new { e.Name })
-                .IsUnique()
-                .IsTsVectorExpressionIndex("simple");
-
-            modelBuilder.Entity<Employee>()
-                .HasIndex(e => new { e.LastName, e.FirstName, e.MiddleName })
-                .HasMethod("GIN")
-                .IsTsVectorExpressionIndex("simple");
         }
     }
 }

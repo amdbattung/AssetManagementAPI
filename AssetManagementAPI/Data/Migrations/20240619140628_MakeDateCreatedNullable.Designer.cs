@@ -5,6 +5,7 @@ using AssetManagementAPI.Data;
 using AssetManagementAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NodaTime;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -14,9 +15,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AssetManagementAPI.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240619140628_MakeDateCreatedNullable")]
+    partial class MakeDateCreatedNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -209,12 +212,6 @@ namespace AssetManagementAPI.Data.Migrations
                     b.HasIndex("DocumentorId")
                         .HasDatabaseName("ix_maintenance_records_documentor_id");
 
-                    b.HasIndex("Reason", "Comment")
-                        .HasDatabaseName("ix_maintenance_records_reason_comment")
-                        .HasAnnotation("Npgsql:TsVectorConfig", "english");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Reason", "Comment"), "GIN");
-
                     b.ToTable("maintenance_records", (string)null);
                 });
 
@@ -282,12 +279,6 @@ namespace AssetManagementAPI.Data.Migrations
 
                     b.HasIndex("TransactorId")
                         .HasDatabaseName("ix_transactions_transactor_id");
-
-                    b.HasIndex("Reason", "Remark")
-                        .HasDatabaseName("ix_transactions_reason_remark")
-                        .HasAnnotation("Npgsql:TsVectorConfig", "english");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Reason", "Remark"), "GIN");
 
                     b.ToTable("transactions", (string)null);
                 });

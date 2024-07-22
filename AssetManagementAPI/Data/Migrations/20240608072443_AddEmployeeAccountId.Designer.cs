@@ -5,8 +5,8 @@ using AssetManagementAPI.Data;
 using AssetManagementAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NodaTime;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -14,13 +14,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AssetManagementAPI.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240608072443_AddEmployeeAccountId")]
+    partial class AddEmployeeAccountId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "maintenance_action", new[] { "report", "service", "decommission" });
@@ -37,12 +39,6 @@ namespace AssetManagementAPI.Data.Migrations
                     b.Property<string>("CustodianId")
                         .HasColumnType("text")
                         .HasColumnName("custodian_id");
-
-                    b.Property<Instant?>("DateCreated")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date_created")
-                        .HasDefaultValueSql("now()");
 
                     b.Property<JsonDocument>("Info")
                         .HasColumnType("jsonb")
@@ -90,12 +86,6 @@ namespace AssetManagementAPI.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("id");
 
-                    b.Property<Instant?>("DateCreated")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date_created")
-                        .HasDefaultValueSql("now()");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
@@ -122,12 +112,6 @@ namespace AssetManagementAPI.Data.Migrations
                     b.Property<string>("AccountId")
                         .HasColumnType("text")
                         .HasColumnName("account_id");
-
-                    b.Property<Instant?>("DateCreated")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date_created")
-                        .HasDefaultValueSql("now()");
 
                     b.Property<string>("DepartmentId")
                         .HasColumnType("text")
@@ -163,7 +147,6 @@ namespace AssetManagementAPI.Data.Migrations
             modelBuilder.Entity("AssetManagementAPI.Models.MaintenanceRecord", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("text")
                         .HasColumnName("id");
 
@@ -179,18 +162,6 @@ namespace AssetManagementAPI.Data.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("text")
                         .HasColumnName("comment");
-
-                    b.Property<Instant?>("Date")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("maintenance_date")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<Instant?>("DateCreated")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date_created")
-                        .HasDefaultValueSql("now()");
 
                     b.Property<string>("DocumentorId")
                         .HasColumnType("text")
@@ -209,19 +180,12 @@ namespace AssetManagementAPI.Data.Migrations
                     b.HasIndex("DocumentorId")
                         .HasDatabaseName("ix_maintenance_records_documentor_id");
 
-                    b.HasIndex("Reason", "Comment")
-                        .HasDatabaseName("ix_maintenance_records_reason_comment")
-                        .HasAnnotation("Npgsql:TsVectorConfig", "english");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Reason", "Comment"), "GIN");
-
                     b.ToTable("maintenance_records", (string)null);
                 });
 
             modelBuilder.Entity("AssetManagementAPI.Models.Transaction", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("text")
                         .HasColumnName("id");
 
@@ -234,17 +198,9 @@ namespace AssetManagementAPI.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("asset_id");
 
-                    b.Property<Instant?>("Date")
-                        .ValueGeneratedOnAdd()
+                    b.Property<DateTime?>("Date")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("transaction_date")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<Instant?>("DateCreated")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date_created")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("date");
 
                     b.Property<string>("Reason")
                         .HasColumnType("text")
@@ -282,12 +238,6 @@ namespace AssetManagementAPI.Data.Migrations
 
                     b.HasIndex("TransactorId")
                         .HasDatabaseName("ix_transactions_transactor_id");
-
-                    b.HasIndex("Reason", "Remark")
-                        .HasDatabaseName("ix_transactions_reason_remark")
-                        .HasAnnotation("Npgsql:TsVectorConfig", "english");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Reason", "Remark"), "GIN");
 
                     b.ToTable("transactions", (string)null);
                 });

@@ -1,7 +1,7 @@
 ﻿using AssetManagementAPI.DTO;
 using FluentValidation;
 
-namespace AssetManagementAPI.Services.Validation
+namespace AssetManagementAPI.Validation
 {
     public class UpdateDepartmentValidator : AbstractValidator<UpdateDepartmentDTO>
     {
@@ -9,6 +9,7 @@ namespace AssetManagementAPI.Services.Validation
         {
             RuleFor(x => x.Name)
                 .NotEmpty()
+                .OverridePropertyName("name")
                 .WithMessage("Name is required.");
         }
     }

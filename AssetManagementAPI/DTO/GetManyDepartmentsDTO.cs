@@ -2,7 +2,8 @@
 
 namespace AssetManagementAPI.DTO
 {
-    public class GetManyDepartmentDTO
+    [Serializable]
+    public class GetManyDepartmentsDTO
     {
         public int PageNumber { get; }
         public int PageSize { get; }
@@ -10,7 +11,7 @@ namespace AssetManagementAPI.DTO
         [JsonPropertyName("data")]
         public IEnumerable<GetDepartmentDTO> Departments { get; }
 
-        public GetManyDepartmentDTO(int pageNumber, int pageSize, int itemCount, IEnumerable<GetDepartmentDTO> departments)
+        public GetManyDepartmentsDTO(int pageNumber, int pageSize, int itemCount, IEnumerable<GetDepartmentDTO> departments)
         {
             this.PageNumber = pageNumber;
             this.PageSize = pageSize;

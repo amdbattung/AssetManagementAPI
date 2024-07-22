@@ -2,23 +2,27 @@
 using AssetManagementAPI.DTO;
 using AssetManagementAPI.Interfaces;
 using AssetManagementAPI.Models;
-using AssetManagementAPI.Services.Helpers;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 
 namespace AssetManagementAPI.Repositories
 {
     public class DepartmentRepository : IDepartmentRepository
     {
         private readonly DataContext _context;
+        private bool _disposed;
 
         public DepartmentRepository(DataContext context)
         {
             this._context = context;
+            this._disposed = false;
         }
 
         public async Task<(ICollection<Department> Data, int PageNumber, int PageSize, int ItemCount)> GetAllAsync(QueryObject? queryObject)
         {
             var department = _context.Departments.AsQueryable();
+
+            department = department.OrderBy(d => EF.Property<Instant>(d, "DateCreated"));
 
             if (!string.IsNullOrWhiteSpace(queryObject?.Query))
             {
@@ -67,7 +71,8 @@ namespace AssetManagementAPI.Repositories
 
             existingDepartment.Name = department.Name ?? existingDepartment.Name;
 
-            return await _context.SaveChangesAsync() > 0 ? existingDepartment : null;
+            await _context.SaveChangesAsync();
+            return existingDepartment;
         }
 
         public async Task<Department?> DeleteAsync(string id)
@@ -83,18 +88,16 @@ namespace AssetManagementAPI.Repositories
             return await _context.SaveChangesAsync() > 0 ? department : null;
         }
 
-        private bool disposed = false;
-
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!this._disposed)
             {
                 if (disposing)
                 {
                     _context.Dispose();
                 }
             }
-            this.disposed = true;
+            this._disposed = true;
         }
 
         public void Dispose()
