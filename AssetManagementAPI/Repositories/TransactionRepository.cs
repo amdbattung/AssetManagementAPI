@@ -26,7 +26,7 @@ namespace AssetManagementAPI.Repositories
 
             if (!string.IsNullOrWhiteSpace(queryObject?.Query))
             {
-                transaction = transaction.Where(t => EF.Functions.ToTsVector("english", t.Reason + " " + t.Remark).Matches(EF.Functions.ToTsQuery("english", $"{queryObject.Query}:*")));
+                transaction = transaction.Where(t => EF.Functions.ToTsVector("english", t.Reason + " " + t.Remark).Matches(EF.Functions.ToTsQuery("english", $"'{queryObject.Query}:*'")));
             }
 
             int pageNumber = queryObject?.PageNumber ?? 1;

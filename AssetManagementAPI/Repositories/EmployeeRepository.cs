@@ -26,7 +26,7 @@ namespace AssetManagementAPI.Repositories
 
             if (!string.IsNullOrWhiteSpace(queryObject?.Query))
             {
-                employee = employee.Where(e => EF.Functions.ToTsVector("simple", e.LastName + " " + e.FirstName + " " + e.MiddleName).Matches(EF.Functions.ToTsQuery("simple", $"{queryObject.Query}:*")));
+                employee = employee.Where(e => EF.Functions.ToTsVector("simple", e.LastName + " " + e.FirstName + " " + e.MiddleName).Matches(EF.Functions.ToTsQuery("simple", $"'{queryObject.Query}:*'")));
             }
 
             int pageNumber = queryObject?.PageNumber ?? 1;

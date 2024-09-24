@@ -26,7 +26,7 @@ namespace AssetManagementAPI.Repositories
 
             if (!string.IsNullOrWhiteSpace(queryObject?.Query))
             {
-                department = department.Where(d => EF.Functions.ToTsVector("simple", d.Name).Matches(EF.Functions.ToTsQuery("simple", $"{queryObject.Query}:*")));
+                department = department.Where(d => EF.Functions.ToTsVector("simple", d.Name).Matches(EF.Functions.ToTsQuery("simple", $"'{queryObject.Query}:*'")));
             }
 
             int pageNumber = queryObject?.PageNumber ?? 1;

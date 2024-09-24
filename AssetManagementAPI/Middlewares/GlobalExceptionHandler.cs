@@ -9,9 +9,7 @@ namespace AssetManagementAPI.Middlewares
 
         public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
         {
-
             _logger = logger;
-
         }
 
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)

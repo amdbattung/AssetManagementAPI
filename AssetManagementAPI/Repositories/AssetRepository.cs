@@ -27,7 +27,7 @@ namespace AssetManagementAPI.Repositories
 
             if (!string.IsNullOrWhiteSpace(queryObject?.Query))
             {
-                asset = asset.Where(a => EF.Functions.ToTsVector("simple", a.Type + " " + a.Name).Matches(EF.Functions.ToTsQuery("simple", $"{queryObject.Query}:*")));
+                asset = asset.Where(a => EF.Functions.ToTsVector("simple", a.Type + " " + a.Name).Matches(EF.Functions.ToTsQuery("simple", $"'{queryObject.Query}:*'")));
             }
 
             int pageNumber = queryObject?.PageNumber ?? 1;
